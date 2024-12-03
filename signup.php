@@ -26,7 +26,7 @@
                     <div class="card shadow-2-strong" style="border-radius: 1rem;">
                         <div class="card-body p-5 text-center">
 
-                            <h3 class="mb-5">Signup dabaj!</h3>
+                            <h3 class="mb-5">Signup!</h3>
 
                             <div id="fout" class=""></div>
 
