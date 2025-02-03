@@ -2,19 +2,26 @@
 session_start();
 include './inc/dbh.php';
 
+// Controleer of de gebruiker is ingelogd
 if (!$_SESSION || !$_SESSION['user']) {
     header('Location: ./index.php');
     exit;
 }
 
+// Verkrijg tv_id (bijv. tv1, tv2, tv3)
+$tvFilter = isset($_GET['tv']) ? $_GET['tv'] : 'tva'; // Default tv1
+
+// Verwerken van formulier voor links toevoegen, verwijderen of bewerken
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['canva_link'])) {
         // Link toevoegen
         $link = $_POST['canva_link'];
+        $tab = $_POST['tab_name']; // Tabnaam toevoegen
+        $tv_id = $_POST['tv_id']; // tv_id toevoegen
         $id = uniqid(); // Simpele ID-generator
-        $sql = "INSERT INTO pages (id, link) VALUES (?, ?)";
+        $sql = "INSERT INTO pages (id, link, tab, tv_id) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ss', $id, $link);
+        $stmt->bind_param('ssss', $id, $link, $tab, $tv_id);
         $stmt->execute();
         $stmt->close();
     } elseif (isset($_POST['delete_link_id'])) {
@@ -25,18 +32,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param('s', $id);
         $stmt->execute();
         $stmt->close();
-    } elseif (isset($_POST['edit_link_id']) && isset($_POST['edit_link_value'])) {
-        // Link bewerken
+    } elseif (isset($_POST['edit_link_id']) && isset($_POST['edit_link_value']) && isset($_POST['edit_tab_value'])) {
+        // Link en Tab bewerken
         $id = $_POST['edit_link_id'];
         $link = $_POST['edit_link_value'];
-        $sql = "UPDATE pages SET link = ? WHERE id = ?";
+        $tab = $_POST['edit_tab_value'];
+        $sql = "UPDATE pages SET link = ?, tab = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ss', $link, $id);
+        $stmt->bind_param('sss', $link, $tab, $id);
         $stmt->execute();
         $stmt->close();
+    } elseif (isset($_POST['new_tv_id'])) {
+        // Verwerken van het toevoegen van een nieuwe TV
+        $new_tv_id = $_POST['new_tv_id'];
+
+        // Controleer of de tv_id al bestaat in de pages-tabel
+        $sql_check = "SELECT COUNT(*) FROM pages WHERE tv_id = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param('s', $new_tv_id);
+        $stmt_check->execute();
+        $stmt_check->bind_result($count);
+        $stmt_check->fetch();
+        $stmt_check->close();
+
+        if ($count == 0) {
+            // Als tv_id niet bestaat, voeg deze toe
+            $id = uniqid(); // Maak een uniek ID voor de nieuwe TV
+            $sql_insert = "INSERT INTO pages (id, tv_id, link, tab) VALUES (?, ?, '', '')"; // Maak een lege pagina met de tv_id
+            $stmt_insert = $conn->prepare($sql_insert);
+            $stmt_insert->bind_param('ss', $id, $new_tv_id);
+            $stmt_insert->execute();
+            $stmt_insert->close();
+
+            echo "Nieuwe TV toegevoegd: " . htmlspecialchars($new_tv_id);
+        } else {
+            echo "Deze TV bestaat al in de database.";
+        }
     }
     header('Location: admin.php'); // Voorkom herindienen van formulier
     exit;
+}
+
+// Haal alle unieke tv_id's op uit de database
+$sql_tvs = "SELECT DISTINCT tv_id FROM pages ORDER BY tv_id";
+$stmt_tvs = $conn->prepare($sql_tvs);
+$stmt_tvs->execute();
+$result_tvs = $stmt_tvs->get_result();
+$tvs = [];
+while ($row = $result_tvs->fetch_assoc()) {
+    $tvs[] = $row['tv_id'];
 }
 ?>
 
@@ -49,126 +93,119 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
+        h1, h2 {
+            color: #333;
         }
         form {
             margin-bottom: 20px;
-            padding: 15px;
-            background: #fff;
-
-            border-radius: 5px;
-            max-width: 600px;
-            margin: 0 auto 20px;
         }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
         }
         button {
-            background: #3498db;
+            cursor: pointer;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-
         }
         button:hover {
-            background: #2980b9;
+            background-color: #45a049;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            background: #fff;
-            margin: 10px 0;
+        .form-container {
+            background-color: #fff;
             padding: 15px;
-            border: 1px solid #ddd;
             border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-        .actions {
-            display: flex;
-            gap: 10px;
+        .link-item {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .edit-input {
-            display: none;
+        .link-item form {
+            display: inline-block;
         }
     </style>
-    <script>
-        function toggleEdit(id) {
-            const linkElement = document.getElementById(`link-text-${id}`);
-            const inputElement = document.getElementById(`edit-input-${id}`);
-            const buttonElement = document.getElementById(`edit-button-${id}`);
-
-            if (inputElement.style.display === 'none') {
-                inputElement.style.display = 'block';
-                linkElement.style.display = 'none';
-                buttonElement.textContent = 'Opslaan';
-            } else {
-                inputElement.style.display = 'none';
-                linkElement.style.display = 'block';
-                buttonElement.textContent = 'Bewerken';
-                document.getElementById(`edit-form-${id}`).submit();
-            }
-        }
-    </script>
 </head>
 <body>
-    <h1>Beheer Carrousel Links</h1>
+    <h1>Beheer Carrousel Links voor TV: <?= htmlspecialchars($tvFilter) ?></h1>
 
-    <!-- Link toevoegen -->
-    <form method="POST">
-        <label for="canva_link">Canva Link:</label>
-        <input type="text" id="canva_link" name="canva_link" required>
-        <button type="submit">Voeg Link Toe</button>
+    <!-- TV Selectie Formulier -->
+    <form method="GET" action="admin.php">
+        <label for="tv_select">Kies TV:</label>
+        <select id="tv_select" name="tv">
+            <?php foreach ($tvs as $tv): ?>
+                <option value="<?= htmlspecialchars($tv) ?>" <?= ($tv == $tvFilter) ? 'selected' : '' ?>><?= htmlspecialchars($tv) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit">Verander TV</button>
     </form>
 
-    <h2>Huidige Links</h2>
+    <!-- Formulier voor het toevoegen van een nieuwe TV -->
+    <div class="form-container">
+        <h2>Nieuwe TV Toevoegen</h2>
+        <form method="POST">
+            <label for="new_tv_id">Nieuwe TV ID:</label>
+            <input type="text" id="new_tv_id" name="new_tv_id" required>
+            <button type="submit">Voeg TV Toe</button>
+        </form>
+    </div>
+
+    <!-- Link toevoegen -->
+    <div class="form-container">
+        <h2>Nieuwe Link Toevoegen</h2>
+        <form method="POST">
+            <label for="canva_link">Canva Link:</label>
+            <input type="text" id="canva_link" name="canva_link" required>
+
+            <label for="tab_name">Tabnaam:</label>
+            <input type="text" id="tab_name" name="tab_name" required>
+
+            <label for="tv_id">TV:</label>
+            <input type="text" id="tv_id" name="tv_id" value="<?= htmlspecialchars($tvFilter) ?>" readonly required>
+
+            <button type="submit">Voeg Link Toe</button>
+        </form>
+    </div>
+
+    <!-- Weergeven van de links en tabs voor de geselecteerde TV -->
+    <h2>Huidige Links en Tabs voor TV: <?= htmlspecialchars($tvFilter) ?></h2>
     <ul>
         <?php
-        // Links ophalen
-        $sql = "SELECT * FROM pages ORDER BY createdAt DESC";
-        $result = $conn->query($sql);
+        $sql = "SELECT * FROM pages WHERE tv_id = ? ORDER BY createdAt DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('s', $tvFilter);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
         while ($row = $result->fetch_assoc()) {
             $id = $row['id'];
             $link = htmlspecialchars($row['link']);
-            echo "
-            <li>
-                <span id='link-text-$id'>$link</span>
-                <form id='edit-form-$id' method='POST' style='display:inline;'>
-                    <input type='hidden' name='edit_link_id' value='$id'>
-                    <input class='edit-input' id='edit-input-$id' type='text' name='edit_link_value' value='$link' style='display:none;'>
+            $tab = htmlspecialchars($row['tab']);
+            ?>
+            <div class="link-item">
+                <p><strong>Tab:</strong> <?= $tab ?> <br> <strong>Link:</strong> <a href="<?= $link ?>" target="_blank"><?= $link ?></a></p>
+                <!-- Link bewerken en verwijderen -->
+                <form method="POST">
+                    <input type="hidden" name="edit_link_id" value="<?= $id ?>">
+                    <input type="text" name="edit_link_value" value="<?= $link ?>">
+                    <input type="text" name="edit_tab_value" value="<?= $tab ?>">
+                    <button type="submit">Bewerken</button>
                 </form>
-                <div class='actions'>
-                    <button id='edit-button-$id' onclick='toggleEdit(\"$id\")' style='height: 2.5rem; margin-top: 0.9rem'>Bewerken</button>
-                    <form method='POST' style='display:inline;'>
-                        <input type='hidden' name='delete_link_id' value='$id'>
-                        <button type='submit' style='background:#e74c3c;'>Verwijderen</button>
-                    </form>
-                </div>
-            </li>";
-        }
-        ?>
+                <form method="POST">
+                    <input type="hidden" name="delete_link_id" value="<?= $id ?>">
+                    <button type="submit">Verwijderen</button>
+                </form>
+            </div>
+        <?php } ?>
     </ul>
 </body>
 </html>

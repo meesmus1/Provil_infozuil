@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2for1 | GIP</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            color: #f8f8f2;
+        }
+
+        .header {
+            background-color: #ff66b2;
+            color: #f8f8f2;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 3px solid #982a69;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #ff66b2;
+        }
+
+        .section {
+            padding: 40px 0;
+            border-bottom: 2px solid #444;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        .content {
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .content p {
+            line-height: 1.6;
+            font-size: 1.1em;
+            color: #f8f8f2;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #ff66b2;
+            color: #1e1e1e;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-weight: bold;
+            border: 2px solid #ff66b2;
+        }
+
+        .cta-button:hover {
+            background-color: #f8f8f2;
+            color: #ff66b2;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #222;
+            color: #f8f8f2;
+        }
+
+        /* Styling voor afbeeldingen */
+        .images {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .image-container {
+            text-align: center;
+            width: 45%;
+            /* Breedte van de containers aanpassen */
+            margin-bottom: 30px;
+            /* Ruimte onder de afbeeldingen */
+        }
+
+        .images img {
+            max-width: 100%;
+            height: auto;
+            border: 3px solid #ff66b2;
+            border-radius: 5px;
+        }
+
+        .image-label {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #f8f8f2;
+            text-align: center;
+        }
+
+        /* Responsieve aanpassingen */
+        @media (max-width: 768px) {
+            .image-container {
+                width: 100%;
+                /* Volledige breedte op kleinere schermen */
+            }
+
+            .images {
+                flex-direction: column;
+                /* Zet de afbeeldingen onder elkaar op kleinere schermen */
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <div class="header">
+        <h1>Welkom bij de 2for1 Broodjeszaak!</h1>
+        <p>Bestel je favoriete broodjes snel en gemakkelijk via onze website.</p>
+    </div>
+
+    <!-- Inleiding Section -->
+    <div class="container">
+        <div class="section">
+            <h2>Inleiding</h2>
+            <div class="content">
+                <p>
+                    De 2for1 Broodjeszaak was oorspronkelijk een bedrijf waarbij klanten via WhatsApp hun broodjes
+                    bestelden. Om de klantbeleving te verbeteren en het bestelproces te vereenvoudigen, hebben we
+                    besloten om een
+                    online bestelsysteem te ontwikkelen. Klanten kunnen nu gemakkelijk broodjes bestellen via een
+                    gebruiksvriendelijke
+                    website.
+                </p>
+            </div>
+        </div>
+
+        <!-- Afbeeldingen Sectie -->
+        <div class="images">
+            <div class="image-container">
+                <img src="login.png" alt="Login Pagina">
+                <div class="image-label">Login Pagina: Klanten loggen in om hun bestellingen te plaatsen.</div><br>
+                <img src="admin.png" alt="Login Pagina">
+                <div class="image-label">Admin Pagina: Bestellingen worden hier gelaten zien voor 2for1.</div>
+            </div>
+            <div class="image-container">
+                <img src="bestel.png" alt="Bestel Pagina">
+                <div class="image-label">Bestel Pagina: Klanten stellen hun broodjes samen voor de bestelling.</div>
+            </div>
+        </div>
+
+        <!-- Probleemstelling Section -->
+        <div class="section">
+            <h2>Probleemstelling</h2>
+            <div class="content">
+                <p>
+                    Hoe kunnen we het oorspronkelijke bestelsysteem, dat via WhatsApp verliep, verbeteren? Het huidige
+                    systeem is ongestructureerd en inefficiënt, waarbij klanten hun bestellingen handmatig doorgeven.
+                    Dit zorgt voor rommelige en onduidelijke communicatie, wat leidt tot vertragingen, miscommunicatie
+                    en ontevreden klanten. Hoe kunnen we deze uitdagingen aanpakken om het bestelproces te stroomlijnen
+                    en de klanttevredenheid te verhogen?
+                </p>
+            </div>
+        </div>
+
+        <!-- Plan van Aanpak Section -->
+        <div class="section">
+            <h2>Plan van Aanpak</h2>
+            <div class="content">
+                <p>
+                    We hebben besloten om een online bestelsysteem te ontwikkelen waarmee klanten hun broodjes kunnen
+                    bestellen, betalingen kunnen doen bij het profiel en hun bestellingen makkelijker aan komt bij
+                    2for1. Het systeem
+                    is opgebouwd met een gebruikersvriendelijke interface en maakt gebruik van een database om
+                    bestellingen
+                    efficiënt bij te houden die deze dan laat zien op een admin page.
+                </p>
+            </div>
+        </div>
+
+        <!-- Realisatie Section -->
+        <div class="section">
+            <h2>Realisatie</h2>
+            <div class="content">
+                <p>
+                    Het systeem werd gerealiseerd met HTML, CSS, JavaScript en PHP. Klanten kunnen zich aanmelden, hun
+                    bestellingen
+                    samenstellen en versturen. Daarnaast is er een backend ontwikkeld waarmee de broodjeszaak
+                    bestellingen kan beheren
+                    en opvolgen. Klanten kunnen hun bestellingen in contanten betalen bij de afhaling.
+                </p>
+            </div>
+        </div>
+
+        <!-- Besluit Section -->
+        <div class="section">
+            <h2>Besluit</h2>
+            <div class="content">
+                <p>
+                    Door de implementatie van het online bestelsysteem is de klanttevredenheid verbeterd en de workflow
+                    in de
+                    broodjeszaak geoptimaliseerd. Het systeem is eenvoudig te gebruiken en heeft het bestelproces
+                    aanzienlijk versneld.
+                    Dit systeem zorgt er ook voor dat er geen fouten kunnen gemaakt worden bij het bestellen want eerst
+                    werden er
+                    soms broodjes besteld en niemand kwam ze ophalen.
+                </p>
+            </div>
+        </div>
+
+        <!-- Link naar Documentatie Section -->
+        <div class="section">
+            <h2>Link naar Documentatie</h2>
+            <div class="content">
+                <p>
+                    Voor gedetailleerde documentatie over het project kun je de GitHub-repository van het project
+                    bekijken:
+                </p>
+                <a href="https://github.com/meesmus1/2for1" class="cta-button" target="_blank">
+                    <i class="fab fa-github"></i> Bekijk de Documentatie op GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 2for1 - Mees van der Heijden - Alle rechten voorbehouden.</p>
+    </footer>
+
+</body>
+
+</html>
